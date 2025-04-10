@@ -1,0 +1,12 @@
+# System dependencies:
+# - poppler-utils (required for pdf2image)
+
+pdf2image>=1.16.3
+Pillow>=10.0.0
+PyPDF2>=3.0.0
+requests>=2.31.0
+dashscope>=1.13.6
+numpy>=1.24.0
+spacy>=3.7.2
+tqdm>=4.66.1
+openai>=1.71.0
