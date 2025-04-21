@@ -8,6 +8,14 @@ from document_loader import DocumentLoaderFactory
 from image_analyzer import ImageAnalyzer
 from text_chunker import TextChunker, FixedLengthChunker, SentenceChunker, ParagraphChunker
 from storage_manager import StorageManager, JsonStorageStrategy
+import yaml
+from model_config import load_model_config
+from concurrent.futures import ThreadPoolExecutor
+
+def load_prompt(prompt_name: str) -> str:
+    """从prompts目录加载提示文本"""
+    prompt_path = Path(__file__).parent / "prompts" / f"{prompt_name}.txt"
+    return prompt_path.read_text(encoding="utf-8")
 
 class DocumentProcessor:
     """文档处理器，整合文档加载、图片分析、文本分块和存储功能"""
@@ -22,37 +30,35 @@ class DocumentProcessor:
         self.chunker = TextChunker(FixedLengthChunker())  # 默认使用固定长度分块
         self.storage_manager = StorageManager()  # 默认使用JSON存储
     
+    def _ensure_dir_exists(self, dir_path: str):
+        """确保目录存在，不存在则创建"""
+        path = Path(dir_path)
+        if not path.exists():
+            path.mkdir(parents=True, exist_ok=True)
+            
     def process_document(self, file_path: str, output_dir: Optional[str] = None,
                         prompt: Optional[str] = None,
                         chunk_strategy: Optional[str] = 'fixed',
                         save_format: Optional[str] = 'json') -> List[str]:
-        """处理文档：加载、解析、分块和存储
+        print(f"正在加载文档 {file_path}")
+        # 加载提示
+        prompt_text = load_prompt(prompt) if isinstance(prompt, str) else prompt
+        # 确保输出目录存在
+        if output_dir:
+            self._ensure_dir_exists(output_dir)
         
-        Args:
-            file_path: PDF文件路径
-            output_dir: 输出目录路径，默认为None（使用输入文件所在目录）
-            prompt: 可选的图片分析提示词
-            chunk_strategy: 分块策略，可选'fixed'、'sentence'或'paragraph'
-            save_format: 存储格式，可选'json'或'csv'
-            
-        Returns:
-            List[str]: 处理后的文本块列表
-        """
+        print(f"文档 {file_path} 加载完成")
         # 1. 加载文档并转换为图片
         loader = DocumentLoaderFactory.create_loader(file_path, 'pdf')
         images = loader.load()
         
-        # 设置随机颜色的进度条
-        def random_color():
-            return f'#{random.randint(0, 0xFFFFFF):06x}'
+        print(f"文档 {file_path} 已转换为图片，正在解析图片内容")
         
-        # 2. 分析图片内容
-        texts = []
-        for img in tqdm(images, desc='分析图片', colour=random_color()):
-            text = self.image_analyzer.analyze_image(img, prompt)
-            texts.append(text)
+        # 2. 使用多图像分析功能
+        texts = self.image_analyzer.analyze_images(images, prompt_text)
         combined_text = '\n\n'.join(texts)
         
+        print(f"文档 {file_path} 图片分析完成，开始根据策略进行文本分块")
         # 3. 根据选择的策略设置分块器
         if chunk_strategy == 'sentence':
             self.chunker.set_strategy(SentenceChunker())
@@ -66,6 +72,7 @@ class DocumentProcessor:
             chunks = self.chunker.chunk_text(combined_text)
             pbar.update(1)
         
+        print(f"文档 {file_path} 文本分块完成，开始保存文本块")
         # 5. 保存文本块到本地
         if output_dir:
             output_path = Path(output_dir) / f'{Path(file_path).stem}.chunks.{save_format}'
@@ -76,24 +83,28 @@ class DocumentProcessor:
             self.storage_manager.save_chunks(chunks, str(output_path), save_format)
             pbar.update(1)
         
+        print(f'文本块已保存到: {Path(output_dir) / Path(file_path).stem}.chunks.json')
         return chunks
 
 def main():
-    # 示例用法
-    api_key = os.getenv("DASHSCOPE_API_KEY")  # 替换为实际的API密钥
-    processor = DocumentProcessor(api_key)
+    # 加载配置
+    with open('config.yaml', 'r', encoding='utf-8') as f:
+        config = yaml.safe_load(f)
     
-    # 处理文档示例
+    model_config = load_model_config()
+    processor = DocumentProcessor(model_config)
+    
+    # 处理文档
     try:
-        file_path = r'pdfs\Improved.pdf'  # 替换为实际的PDF文件路径
-        output_dir = 'output'  # 指定输出目录
-        chunks = processor.process_document(
-            file_path,
-            output_dir=output_dir,
-            prompt='请详细提取文档中的文字内容，包括标题、正文和表格中的文本。',
-            chunk_strategy='paragraph',
-            save_format='json'  # 可选'json'或'csv'
-        )
+        input_dir = Path(config['pdf']['input_dir'])
+        for pdf_file in input_dir.glob('*.pdf'):
+            chunks = processor.process_document(
+                str(pdf_file),
+                output_dir=config['pdf']['output_dir'],
+                prompt=config['pdf']['default_prompt'],
+                chunk_strategy=config['pdf']['chunk_strategy'],
+                save_format=config['pdf']['save_format']
+            )
         
         print(f'文档处理完成，共生成 {len(chunks)} 个文本块')
         print(f'文本块已保存到: {Path(output_dir) / Path(file_path).stem}.chunks.json')
@@ -108,3 +119,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+

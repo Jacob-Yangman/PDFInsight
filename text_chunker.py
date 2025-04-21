@@ -43,7 +43,7 @@ class FixedLengthChunker(ChunkStrategy):
                 break
             
             # 在chunk_size位置寻找最近的句子结束符
-            next_period = text.find('.', end - 50, end + 50)
+            next_period = text.find('。', end - 50, end + 50)
             if next_period != -1:
                 end = next_period + 1
             
@@ -103,15 +103,36 @@ class ParagraphChunker(ChunkStrategy):
         
         return chunks
 
-class TextChunker:
-    """文本分块器主类，用于管理和使用不同的分块策略"""
+class TableChunker:
+    """专门处理表格内容的分块策略"""
     
-    def __init__(self, strategy: ChunkStrategy):
-        """初始化文本分块器
+    def chunk_text(self, text: str) -> List[str]:
+        # 识别表格内容（假设表格已按prompt要求转换为Markdown格式）
+        tables = []
+        current_table = []
+        in_table = False
         
-        Args:
-            strategy: 分块策略实例
-        """
+        for line in text.split('\n'):
+            if line.strip().startswith('|') and line.strip().endswith('|'):
+                in_table = True
+                current_table.append(line)
+            elif in_table:
+                tables.append('\n'.join(current_table))
+                current_table = []
+                in_table = False
+        
+        # 将每个表格作为独立分块
+        return tables
+
+# 在TextChunker类中注册新策略
+class TextChunker:
+    def __init__(self, strategy=None):
+        self.strategies = {
+            'fixed': FixedLengthChunker(),
+            'sentence': SentenceChunker(),
+            'paragraph': ParagraphChunker(),
+            'table': TableChunker()  # 新增表格分块策略
+        }
         self.strategy = strategy
 
     def set_strategy(self, strategy: ChunkStrategy):

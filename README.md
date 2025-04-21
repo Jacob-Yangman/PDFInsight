@@ -9,14 +9,18 @@ PDFInsight是一个基于Python的高性能文档智能处理系统，集成了�
 
 ```
 PDFInsight/
-├── document_loader.py   # 文档加载模块
-├── image_analyzer.py    # 图像分析模块
-├── text_chunker.py     # 文本分块模块
+├── .gitignore          # Git忽略规则
+├── .vscode/            # VSCode配置
+│   └── settings.json   # 编辑器设置
+├── README.md           # 项目说明文档
+├── config.yaml         # 配置文件
+├── document_loader.py  # 文档加载模块
+├── image_analyzer.py   # 图像分析模块
+├── main.py             # 主程序入口
+├── model_config.py     # 模型配置模块
+├── requirements.txt    # 项目依赖
 ├── storage_manager.py  # 存储管理模块
-├── main.py            # 主程序入口
-├── requirements.txt   # 项目依赖
-├── pdfs/             # PDF文档目录
-└── output/           # 输出结果目录
+└── text_chunker.py     # 文本分块模块
 ```
 
 ## 核心功能
@@ -28,18 +32,43 @@ PDFInsight/
 - 友好的进度显示和错误处理
 
 ## 使用方法
+```bash
+git clone https://github.com/Jacob-Yangman/PDFInsight.git
+cd PDFInsight
+```
+
 
 1. 安装依赖：
+```bash
+conda create -n pdf_insight python=3.10
+conda activate pdf_insight
+```
 ```bash
 pip install -r requirements.txt
 ```
 
-2. 设置API密钥：
+2. 安装poppler（PDF转图片工具）：
+- Windows：
+  - 下载poppler： https://github.com/oschwartz10612/poppler-windows/releases
+  - 解压到C:\poppler目录
+  - 将C:\poppler\Library\bin添加到系统PATH环境变量
+
+- MacOS：
+```bash
+brew install poppler
+```
+
+- Linux：
+```bash
+sudo apt-get install poppler-utils
+```
+
+3. 设置API密钥：
 ```python
 export DASHSCOPE_API_KEY="your_api_key_here"
 ```
 
-3. 运行程序：
+4. 运行程序：
 ```python
 python main.py
 ```
