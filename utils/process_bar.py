@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 定义随机色进度条
+"""
+
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
 import random
 

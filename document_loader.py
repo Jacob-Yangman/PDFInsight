@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 文档加载器，负责加载文档并转换为图片
+"""
+
 from abc import ABC, abstractmethod
 from typing import List, Union, BinaryIO
 from pathlib import Path

@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 模型配置加载器
+"""
+
 from dataclasses import dataclass
 import yaml
 from pathlib import Path

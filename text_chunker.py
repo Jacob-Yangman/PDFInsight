@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 分块器，负责将文本分割成块
+"""
+
 from abc import ABC, abstractmethod
 from typing import List
 import re

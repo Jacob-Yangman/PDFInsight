@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 存储管理器，负责文本块的本地化存储
+"""
+
 import json
 import csv
 from typing import List, Dict, Any

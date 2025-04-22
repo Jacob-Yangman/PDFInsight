@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 日志配置
+"""
+
 import logging
 import os
 from pathlib import Path

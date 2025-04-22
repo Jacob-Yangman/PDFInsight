@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 测试用户API_KEY（Qwen）
+"""
+
 from model_config import ModelConfig
 from image_analyzer import ImageAnalyzer
 from PIL import Image

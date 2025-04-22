@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 入口函数
+"""
+
 import os
 from typing import List, Optional
 from pathlib import Path
@@ -17,7 +24,6 @@ import httpx
 # 初始化日志
 setup_logging()
 
-# 禁用httpx的INFO级别日志
 httpx_logger = logging.getLogger("httpx")
 httpx_logger.setLevel(logging.WARNING)
 
@@ -71,7 +77,6 @@ class DocumentProcessor:
         
 
         prompt_text = load_prompt(prompt) if isinstance(prompt, str) else prompt
-        # 确保输出目录存在
         if output_dir:
             self._ensure_dir_exists(output_dir)
         
@@ -120,7 +125,6 @@ class DocumentProcessor:
                 output_path = output_path.with_name(f"{original_stem}_{counter}{output_path.suffix}")
                 counter += 1
 
-        # 保存文本块进度条
         with create_progress_bar() as progress:
             task_save = progress.add_task("保存文本块", total=float(len(chunks)))
             self.storage_manager.save_chunks(chunks, str(output_path), save_format)
@@ -135,7 +139,6 @@ class DocumentProcessor:
 
 
 def main():
-    # 加载配置
     with open('config.yaml', 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
     
@@ -163,7 +166,6 @@ def main():
         
     except Exception as e:
         print(f'处理文档时出错: {str(e)}')
-
 
 
 if __name__ == '__main__':

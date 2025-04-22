@@ -1,3 +1,10 @@
+# coding=utf-8
+"""
+    @Author: Jacob
+    @Date  : 2025/4/20
+    @Desc  : 图片解析器，负责解析图片中的文字和图表信息
+"""
+
 from typing import List, Optional, Dict
 from PIL import Image
 from openai import OpenAI
