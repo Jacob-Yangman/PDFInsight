@@ -22,20 +22,14 @@ class PDFLoader(DocumentLoader):
         self.dpi = dpi
 
     def load(self) -> List[Image.Image]:
-        """将PDF文档转换为PIL Image对象列表
-        
-        Returns:
-            List[Image.Image]: 每页PDF对应的图片列表
-        """
         try:
             if isinstance(self.source, (str, Path)):
-                images = convert_from_path(self.source, dpi=self.dpi)
+                images = convert_from_path(self.source, dpi=self.dpi, fmt='jpeg')  # 明确指定格式
             else:
-                # 处理二进制流输入
                 with tempfile.NamedTemporaryFile(suffix='.pdf') as tmp:
                     tmp.write(self.source.read())
                     tmp.seek(0)
-                    images = convert_from_path(tmp.name, dpi=self.dpi)
+                    images = convert_from_path(tmp.name, dpi=self.dpi, fmt='jpeg')
             
             # 确保所有图片都是RGB模式
             processed_images = []

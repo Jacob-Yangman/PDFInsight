@@ -1,10 +1,10 @@
 pdf:
   input_dir: "pdfs"
   output_dir: "output"
-  chunk_strategy: "paragraph"
-  save_format: "json"
+  chunk_strategy: "paragraph"  # 可选：'fixed', 'sentence', 'paragraph', 'table'
+  save_format: "json"  # 可选：'json', 'csv'
   default_prompt: "image_analysis"  # 对应prompts/image_analysis.txt
-
+  overwrite_output: false  # 是否覆盖原有的输出文件
 
 model:
   name: "qwen-vl-max-latest"  # 模型名称
@@ -14,3 +14,6 @@ model:
   # 2. 在此处填写环境变量名称(如: QWEN_API_KEY)
   # 3. 程序会自动从环境变量读取实际API密钥
   base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"  # API基础URL
+
+cache:
+  image_cache_size: 100  # 图片缓存最大数量，默认100
