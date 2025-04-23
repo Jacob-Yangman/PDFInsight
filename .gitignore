@@ -1,12 +1,11 @@
 # Ignore PDFs and output folders
-!/pdfs/
 /pdfs/*
-!/output/
 /output/*
-**/__pycache__/
-.vscode/
 /cache/*
-!/cache/
 /logs/*
-!/logs/
+.vscode/
+**/__pycache__/
 .gitignore
+
+# 保留空文件夹
+!.gitkeep
