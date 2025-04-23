@@ -15,12 +15,12 @@ def setup_logging():
     log_dir = Path(__file__).parent / "logs"
     log_dir.mkdir(exist_ok=True)
     
-    # 配置日志
+    # 配置日志 - 使用精确到分钟的文件名格式
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_dir / f"{datetime.now().strftime('%Y%m%d')}.log", encoding='utf-8'),
+            logging.FileHandler(log_dir / f"{datetime.now().strftime('%Y%m%d_%H%M')}.log", encoding='utf-8'),
             logging.StreamHandler()
         ]
     )

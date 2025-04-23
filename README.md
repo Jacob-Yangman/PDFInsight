@@ -9,10 +9,13 @@ PDFInsight是一个基于Python的高性能文档智能处理系统，集成了�
 ```
 PDFInsight/
 ├── .gitignore          # Git忽略规则
-├── .vscode/            # VSCode配置
-│   └── settings.json   # 编辑器设置
+├── cache/              # 缓存目录
+├── logs/               # 日志目录
+├── prompts/            # 提示词目录
+├── utils/              # 工具模块
 ├── README.md           # 项目说明文档
 ├── config.yaml         # 配置文件
+├── logging_config.py   # 日志配置模块
 ├── document_loader.py  # 文档加载模块
 ├── image_analyzer.py   # 图像分析模块
 ├── main.py             # 主程序入口
@@ -25,7 +28,7 @@ PDFInsight/
 ## 核心功能
 
 - 支持PDF文档智能加载和解析
-- 基于通义千问API的高精度图像文字识别
+- 基于Qwen-VL-Max视觉模型API的高精度图像文字识别
 - 灵活的文本分块策略（固定长度、句子、段落、表格）
 - 可扩展的存储管理（支持JSON、CSV格式）
 - 友好的进度显示和错误处理

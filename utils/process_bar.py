@@ -5,13 +5,27 @@
     @Desc  : 定义随机色进度条
 """
 
-from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
-import random
+from rich.progress import (
+    Progress, 
+    BarColumn, 
+    TextColumn, 
+    TimeRemainingColumn,
+    TimeElapsedColumn,
+    ProgressColumn
+)
+from rich.text import Text
+
+class PercentageColumn(ProgressColumn):
+    """自定义百分比列"""
+    def render(self, task) -> Text:
+        return Text(f"{task.completed}/{task.total} ({task.percentage:>.1f}%)")
 
 def create_progress_bar():
-    random_color = f"rgb({random.randint(0,255)},{random.randint(0,255)},{random.randint(0,255)})"
     return Progress(
         TextColumn("[bold blue]{task.description}"),
-        BarColumn(style=random_color),
+        BarColumn(bar_width=None, style="cyan", complete_style="bright_magenta"),
+        PercentageColumn(),
+        TimeElapsedColumn(),
         TimeRemainingColumn(),
+        expand=True
     )

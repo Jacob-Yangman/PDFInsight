@@ -21,6 +21,8 @@ from utils.process_bar import create_progress_bar
 import logging
 from logging_config import setup_logging
 import httpx
+from datetime import datetime  # 新增导入
+
 # 初始化日志
 setup_logging()
 
@@ -68,12 +70,8 @@ class DocumentProcessor:
                         chunk_strategy: Optional[str] = 'fixed',
                         save_format: Optional[str] = 'json',
                         overwrite_output: bool = True) -> List[str]:
-        # 验证API_KEY
-        if not self._validate_api_key(self.image_analyzer.model_config):
-            logger.error("API_KEY无效，请检查配置后重试")
-            return []
             
-        logger.info(f"正在处理文档 {file_path}".center(80, '*'))
+        logger.info(f"正在处理文档 {file_path}".center(40, '*'))
         
 
         prompt_text = load_prompt(prompt) if isinstance(prompt, str) else prompt
@@ -108,7 +106,7 @@ class DocumentProcessor:
         
         # 4. 文本分块
         with create_progress_bar() as progress:
-            task_chunk = progress.add_task("文本分块", total=1.)
+            task_chunk = progress.add_task("文本分块", total=1)
             chunks = self.chunker.chunk_text(combined_text)
             progress.update(task_chunk, advance=1)
             
@@ -126,19 +124,20 @@ class DocumentProcessor:
                 counter += 1
 
         with create_progress_bar() as progress:
-            task_save = progress.add_task("保存文本块", total=float(len(chunks)))
+            task_save = progress.add_task("保存文本块", total=len(chunks))
             self.storage_manager.save_chunks(chunks, str(output_path), save_format)
-            progress.update(task_save, advance=1)
+            progress.update(task_save, completed=len(chunks))
             
         logger.info(f'文本块已保存到: {output_path}')
-        logger.info('\n预览前3个文本块：')
+        print('\n预览前3个文本块：')
         for i, chunk in enumerate(chunks[:3], 1):
-            logger.info(f'\n块 {i}:\n{chunk}\n{"-"*50}')
+            print(f'\n块 {i}:\n{chunk}\n{"-"*50}')
             
         logger.info("*" * 80)
 
 
 def main():
+
     with open('config.yaml', 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
     

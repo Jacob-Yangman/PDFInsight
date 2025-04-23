@@ -17,6 +17,7 @@ from functools import lru_cache
 from concurrent.futures import ThreadPoolExecutor
 from utils.process_bar import create_progress_bar
 import logging
+from concurrent.futures import as_completed
 logger = logging.getLogger(__name__)
 
 class ImageAnalyzer:
@@ -137,14 +138,14 @@ class ImageAnalyzer:
             raise ValueError("输入必须是图片列表")
         
         with create_progress_bar() as progress:
-            task = progress.add_task("解析中", total=float(len(images)))
+            task = progress.add_task("解析中", total=len(images))
             
             results = []
             # 使用线程池并行处理图片分析
             with ThreadPoolExecutor() as executor:
-                futures = {executor.submit(self.analyze_image, image, prompt): image for image in images}
+                futures = list(executor.submit(self.analyze_image, image, prompt) for image in images)
                 
-                for future in futures:
+                for future in as_completed(futures):  # 使用as_completed确保按完成顺序处理
                     try:
                         result = future.result()
                         if not isinstance(result, str):

@@ -1,8 +1,12 @@
 # Ignore PDFs and output folders
-/pdfs/
-/output/
+!/pdfs/
+/pdfs/*
+!/output/
+/output/*
 **/__pycache__/
 .vscode/
-/cache/
-/logs/
+/cache/*
+!/cache/
+/logs/*
+!/logs/
 .gitignore
